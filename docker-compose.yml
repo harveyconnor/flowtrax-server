@@ -1,0 +1,65 @@
+version: "3"
+
+services:
+  traefik:
+    image: traefik
+    container_name: traefik
+    ports:
+      - "80:80"
+      - "443:443"
+    labels:
+      - "traefik.frontend.rule=Host:admin.flowtrax.net"
+      - "traefik.port=8080"
+    networks:
+      - web
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik.toml:/traefik.toml
+      - ./acme.json:/acme.json
+  blog:
+    image: wordpress
+    container_name: blog
+    environment:
+      WORDPRESS_DB_PASSWORD:
+    labels:
+      - traefik.backend=blog
+      - traefik.frontend.rule=Host:blog.flowtrax.net
+      - traefik.docker.network=web
+      - traefik.port=80
+    networks:
+      - internal
+      - web
+    depends_on:
+      - mysql
+  app:
+          image: nginx
+          container_name: app
+          labels:
+                  - traefik.backend=app
+                  - traefik.frontend.rule=Host:flowtrax.net
+                  - traefik.docker.network=web
+                  - traefik.port=80
+          networks:
+                  - internal
+                  - web
+  mongodb:
+          image: mongo
+          container_name: mongodb
+          ports:
+                  - 27107:27017
+                
+  mysql:
+    image: mysql:5.7
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD:
+    networks:
+      - internal
+    labels:
+      - traefik.enable=false
+
+networks:
+  web:
+    external: true
+  internal:
+    external: false

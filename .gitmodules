@@ -1,0 +1,3 @@
+[submodule "flowtrax-web"]
+	path = flowtrax-web
+	url = https://github.com/harveyconnor/flowtrax-web

@@ -6,6 +6,7 @@ services:
     container_name: traefik
     ports:
       - "80:80"
+      - "8080:8080"
       - "443:443"
     labels:
       - "traefik.frontend.rule=Host:admin.flowtrax.net"
@@ -31,17 +32,19 @@ services:
       - web
     depends_on:
       - mysql
-  app:
-          image: nginx
-          container_name: app
+  web:
+          build: ./flowtrax-web
+          container_name: web
           labels:
-                  - traefik.backend=app
+                  - traefik.backend=web
                   - traefik.frontend.rule=Host:flowtrax.net
                   - traefik.docker.network=web
-                  - traefik.port=80
+                  - traefik.port=8080
           networks:
                   - internal
                   - web
+          environment:
+                  NODE_ENV: production
   mongodb:
           image: mongo
           container_name: mongodb

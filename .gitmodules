@@ -1,3 +1,6 @@
 [submodule "flowtrax-web"]
 	path = flowtrax-web
 	url = https://github.com/harveyconnor/flowtrax-web
+[submodule "WeWorldServer"]
+	path = WeWorldServer
+	url = https://github.com/harveyconnor/WeWorldServer
